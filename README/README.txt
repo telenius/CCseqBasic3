@@ -32,7 +32,7 @@ Installation instructions :
 4) Fill in your server address to the conf/serverAddressAndPublicDiskSetup.sh file
     nano CCseqBasic3/conf/serverAddressAndPublicDiskSetup.sh       # Instructions as comment lines in the file
 
-5) Add the main script NGseqBasic.sh to your path or BASH profile (optional), f.ex :
+5) Add the main script CCseqBasic3.sh to your path or BASH profile (optional), f.ex :
     export PATH:${PATH}:/where/you/unpacked/it/CCseqBasic3/CCseqBasic3.sh
 
 6) Start using the pipe ! (no installation needed)

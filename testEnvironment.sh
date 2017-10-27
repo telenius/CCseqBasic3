@@ -5,18 +5,18 @@
 #                                                                        #
 # This file is part of CCseqBasic .                                      #
 #                                                                        #
-# NGseqBasic is free software: you can redistribute it and/or modify     #
+# CCseqBasic is free software: you can redistribute it and/or modify     #
 # it under the terms of the GNU General Public License as published by   #
 # the Free Software Foundation, either version 3 of the License, or      #
 # (at your option) any later version.                                    #
 #                                                                        #
-# NGseqBasic is distributed in the hope that it will be useful,          #
+# CCseqBasic is distributed in the hope that it will be useful,          #
 # but WITHOUT ANY WARRANTY; without even the implied warranty of         #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
 # GNU General Public License for more details.                           #
 #                                                                        #
 # You should have received a copy of the GNU General Public License      #
-# along with NGseqBasic.  If not, see <http://www.gnu.org/licenses/>.    #
+# along with CCseqBasic.  If not, see <http://www.gnu.org/licenses/>.    #
 ##########################################################################
 
 function finish {
@@ -38,7 +38,7 @@ trap finish EXIT
 exitCode=0
 
 echo
-echo "This is test for NGseqBasic configuration setup ! "
+echo "This is test for CCseqBasic configuration setup ! "
 echo
 echo "( For automated testing : Return value of the script is '0' if all clear or only warnings, and '1' if fatal errors encountered. )"
 echo
@@ -242,10 +242,10 @@ scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
 ls ${mainScriptFolder}/dpnIIcutReads3.pl
 scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
 
-ls ${mainScriptFolder}/nlaIIIcutGenome3.pl
-scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
-ls ${mainScriptFolder}/nlaIIIcutReads3.pl
-scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
+# ls ${mainScriptFolder}/nlaIIIcutGenome3.pl
+# scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
+# ls ${mainScriptFolder}/nlaIIIcutReads3.pl
+# scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
 
 # ls ${mainScriptFolder}/hindIIIcutGenome3.pl
 # scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
@@ -285,21 +285,11 @@ echo
 sleep 3
 echo "Scripts for read filtering :"
 echo
-ls ${mainScriptFolder}/filter.sh
+ls ${mainScriptFolder}/filterArtifactMappers/filter.sh
 scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
-ls ${mainScriptFolder}/1_blat.sh
+ls ${mainScriptFolder}/filterArtifactMappers/1_blat.sh
 scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
-ls ${mainScriptFolder}/2_psl_parser.pl
-scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
-echo
-sleep 3
-echo "Scripts for drawing summary figure :"
-echo
-ls ${mainScriptFolder}/countsFromCCanalyserOutput.sh
-scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
-ls ${mainScriptFolder}/generatePercentages.py
-scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
-ls ${mainScriptFolder}/drawFigure.py
+ls ${mainScriptFolder}/filterArtifactMappers/2_psl_parser.pl
 scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
 echo
 sleep 3
@@ -329,12 +319,12 @@ then
 echo
 echo "###########################################"
 echo
-echo "ERROR !   The scripts CCseqBasic4.sh is dependent on, are not found in their correct relative paths !"
+echo "ERROR !   The scripts CCseqBasic3.sh is dependent on, are not found in their correct relative paths !"
 echo "          Maybe your tar archive was corrupted, or you meddled with the folder structure after unpacking ?"
 echo
 echo "###########################################"
 echo
-echo "This is what you SHOULD see if you run 'tree' command in your NGseqBasic folder :"
+echo "This is what you SHOULD see if you run 'tree' command in your CCseqBasic folder :"
 echo
 echo ' |-- CCseqBasic3.sh'
 echo ' |-- testEnvironment.sh'
@@ -347,8 +337,6 @@ echo '     |   |-- dpnIIcutGenome3.pl dpnIIcutReads3.pl nlaIIIcutGenome3.pl nlaI
 # echo '     |   |   hindIIIcutGenome3.pl hindIIIcutReads3.pl'
 echo '     |   |-- filterArtifactMappers'
 echo '     |   |    `-- filter.sh 1_blat.sh 2_psl_parser.pl '
-echo '     |   `-- drawFigure'
-echo '     |        `-- countsFromCCanalyserOutput.sh drawFigure.py generatePercentages.py '
 echo '     |-- subroutines'
 echo '     |   |-- hubbers.sh runtools.sh '
 echo '     |   |-- blacklistSetters.sh genomeSetters.sh cleaners.sh '
@@ -448,7 +436,7 @@ echo
 echo "Could not finish testing, as you hadn't set up your environment !"
 echo
 echo "Set up your files according to instructions in :"
-echo "http://sara.molbiol.ox.ac.uk/public/telenius/CCseqBasicManual/external/instructions.html"
+echo "http://sara.molbiol.ox.ac.uk/public/telenius/CCseqBasicManual/instructionsGeneral.html"
 echo
 sleep 4
 
@@ -703,14 +691,14 @@ perl --version >> /dev/null
 exitCode=$(( ${exitCode} + $? ))
 echo
 
-sleep 2
+# sleep 2
 
-echo "Python .."
-echo
-python --version
-python --version >> /dev/null
-exitCode=$(( ${exitCode} + $? ))
-echo
+# echo "Python .."
+# echo
+# python --version
+# python --version >> /dev/null
+# exitCode=$(( ${exitCode} + $? ))
+# echo
 
 sleep 2
 ##########################################################################

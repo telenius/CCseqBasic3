@@ -231,7 +231,10 @@ BLACKLIST=()
 . ${confFolder}/loadNeededTools.sh
 . ${confFolder}/serverAddressAndPublicDiskSetup.sh
 
-setConfigLocations
+# setConfigLocations
+setPathsForPipe
+setGenomeLocations
+setPublicLocations
 
 echo 
 echo "Supported genomes : "
