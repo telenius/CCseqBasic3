@@ -1,6 +1,6 @@
 #!/bin/bash
 
-setConfigLocations(){
+setGenomeLocations(){
 
 ##########################################################################
 # Copyright 2017, Jelena Telenius (jelena.telenius@imm.ox.ac.uk)         #
@@ -21,82 +21,17 @@ setConfigLocations(){
 # along with CCseqBasic3.  If not, see <http://www.gnu.org/licenses/>.   #
 ##########################################################################
 
-# The structure of the pipeline codes : 
-
-# You should have these files, in these subfolders :
-#
-# CCseqBasic3/
-#
-# |
-# |-- CCseqBasic3.sh
-# |
-# |-- bin
-# |   |
-# |   |-- runscripts
-# |   |   |
-# |   |   |-- CCanalyser3_noduplFilter.pl
-# |   |   |-- CCanalyser3.pl
-# |   |   |-- dpngenome3_1.pl
-# |   |   |-- dpnII2E.pl
-# |   |   |
-# |   |   `-- filterArtifactMappers
-# |   |       |
-# |   |       |-- 1_blat.sh
-# |   |       |-- 2_psl_parser.pl
-# |   |       `-- filter.sh
-# |   |   
-# |   `-- subroutines
-# |       |-- cleaners.sh
-# |       |-- hubbers.sh
-# |       |-- parametersetters.sh
-# |       |-- runtools.sh
-# |       |-- testers_and_loggers.sh
-# |       `-- usageAndVersion.sh
-# |
-# |-- conf
-# |   |-- config.sh
-# |   | 
-# |   |-- BLACKLIST
-# |   |   |-- hg18.bed
-# |   |   |-- hg19.bed
-# |   |   |-- mm10.bed
-# |   |   `-- mm9.bed
-# |   | 
-# |   `-- UCSCgenomeSizes
-# |       |-- danRer10.chrom.sizes
-# |       |-- danRer7.chrom.sizes
-# |       |-- dm3.chrom.sizes
-# |       |-- galGal4.chrom.sizes
-# |       |-- hg18.chrom.sizes
-# |       |-- hg19.chrom.sizes
-# |       |-- hg38.chrom.sizes
-# |       |-- mm10.chrom.sizes
-# |       `-- mm9.chrom.sizes
-# |
-# `-- README
-#     |-- LICENSE.txt
-#     `-- README.txt
-
-
-
-# You can add CCseqBasic3.sh to your path, to run the pipeline with command 'CCseqBasic3.sh'
-# , but you can run it with /full/path/to/CCseqBasic3.sh just as well.
-
-# All the scripts it uses to run the pipeline are in the 'bin' folder. These need not to be in the path.
-# The Gnu public license and readme of the pipeline are available in the 'README' folder
-
-# #############################################################################
-
-# This is the CONFIGURATION FILE ( conf/config.sh )
+# This is the CONFIGURATION FILE to set up your GENOME INDICES ( conf/genomeBuildSetup.sh )
 
 # Fill the locations of :
 
-# - bowtie 1 indices , whole genome fasta files , ucsc chromosome size files, blacklisted regions bed files.
-# - genome digest files
-# - public server address 
-# - bioinformatics tools (tool paths)
+# - bowtie indices (bowtie 1/2 )
+# - ucsc chromosome size files (genomes mm9,mm10,hg18,hg19,hg38,danRer7,danRer10,galGal4,dm3 already supported)
+# - blacklisted regions bed files (genomes mm9,mm10,hg18,hg19 already provided)
+# - genome digest files (optional, but will make the runs faster)
 
 # As given in below examples
+
 
 # #############################################################################
 # SUPPORTED GENOMES 
@@ -116,6 +51,7 @@ supportedGenomes[7]="galGal4"
 supportedGenomes[8]="dm3"
 supportedGenomes[9]="dm6"
 supportedGenomes[10]="mm10balb"
+supportedGenomes[11]="mm9PARP"
 
 # The above genomes should have :
 # 1) bowtie1 indices
@@ -161,6 +97,7 @@ BOWTIE1[7]="/databank/igenomes/Gallus_gallus/UCSC/galGal4/Sequence/BowtieIndex/g
 BOWTIE1[8]="/databank/igenomes/Drosophila_melanogaster/UCSC/dm3/Sequence/BowtieIndex/genome"
 BOWTIE1[9]="/databank/igenomes/Drosophila_melanogaster/UCSC/dm6/Sequence/BowtieIndex/genome"
 BOWTIE1[10]="/t1-data/user/rbeagrie/genomes/balbc/mm10_BALB-cJ_snpsonly/bowtie1-indexes/mm10_BALB-cJ"
+BOWTIE1[11]="/t1-data/user/hugheslab/telenius/GENOMES/PARP/mm9PARP"
 
 # The indices in the BOWTIE1 array refer to genome names in supportedGenomes array (top of page).
 
@@ -171,7 +108,6 @@ BOWTIE1[10]="/t1-data/user/rbeagrie/genomes/balbc/mm10_BALB-cJ_snpsonly/bowtie1-
 
 # To add NEW genomes (in addition to above) to the list - modify also the subroutine
 # setBOWTIEgenomeSizes() in the main script CCseqBasic3.sh
-
 
 # #############################################################################
 # BOWTIE 2 INDICES
@@ -207,6 +143,7 @@ BOWTIE2[7]="/databank/igenomes/Gallus_gallus/UCSC/galGal4/Sequence/Bowtie2Index/
 BOWTIE2[8]="/databank/igenomes/Drosophila_melanogaster/UCSC/dm3/Sequence/Bowtie2Index/genome"
 BOWTIE2[9]="/databank/igenomes/Drosophila_melanogaster/UCSC/dm6/Sequence/Bowtie2Index/genome"
 BOWTIE2[10]="/t1-data/user/rbeagrie/genomes/balbc/mm10_BALB-cJ_snpsonly/bowtie2-indexes/mm10_BALB-cJ"
+BOWTIE2[11]="NOT_SUPPORTED_needsToBeAddedToConfigFile"
 
 # The indices in the BOWTIE2 array refer to genome names in supportedGenomes array (top of page).
 
@@ -214,7 +151,6 @@ BOWTIE2[10]="/t1-data/user/rbeagrie/genomes/balbc/mm10_BALB-cJ_snpsonly/bowtie2-
 # The pipeline checks that at least one index file exists, before proceeding with the analysis.
 
 # When adding new genomes : remember to update the "supportedGenomes" list above (top of this file) as well !
-
 
 # #############################################################################
 # WHOLE GENOME FASTA FILES
@@ -237,6 +173,10 @@ WholeGenomeFASTA[7]="/databank/igenomes/Gallus_gallus/UCSC/galGal4/Sequence/Whol
 WholeGenomeFASTA[8]="/databank/igenomes/Drosophila_melanogaster/UCSC/dm3/Sequence/WholeGenomeFasta/genome.fa"
 WholeGenomeFASTA[9]="/databank/igenomes/Drosophila_melanogaster/UCSC/dm6/Sequence/WholeGenomeFasta/genome.fa"
 WholeGenomeFASTA[10]="/t1-data/user/rbeagrie/genomes/balbc/mm10_BALB-cJ_snpsonly/mm10_BALB-cJ.fa"
+# The mm9PARP.fa causes error via dpnIIcutGenome4.pl as that outputs file called mm9PARP_dpnII_coordinates.txt
+# and the subsequent scripts assume file called genome_dpnII_coordinates.txt instead.
+# WholeGenomeFASTA[11]="/t1-data/user/hugheslab/telenius/GENOMES/PARP/mm9PARP.fa"
+WholeGenomeFASTA[11]="/t1-data/user/hugheslab/telenius/GENOMES/PARP/mm9/genome.fa"
 
 # The indices in the WholeGenomeFASTA array refer to genome names in supportedGenomes array (top of page).
 
@@ -251,7 +191,7 @@ WholeGenomeFASTA[10]="/t1-data/user/rbeagrie/genomes/balbc/mm10_BALB-cJ_snpsonly
 
 # The UCSC genome sizes, for ucsctools .
 # By default these are located in the 'conf/UCSCgenomeSizes' folder (relative to location of CCseqBasic3.sh main script) .
-# All these are already there - they come with the CCseqBasic4 codes.
+# All these are already there - they come with the CCseqBasic3 codes.
 
 # Change the files / paths below, if you want to use your own versions of these files. 
 
@@ -270,6 +210,8 @@ UCSC[7]="${confFolder}/UCSCgenomeSizes/galGal4.chrom.sizes"
 UCSC[8]="${confFolder}/UCSCgenomeSizes/dm3.chrom.sizes"
 UCSC[9]="${confFolder}/UCSCgenomeSizes/dm6.chrom.sizes"
 UCSC[10]="${confFolder}/UCSCgenomeSizes/mm10.chrom.sizes"
+# UCSC[11]="${confFolder}/UCSCgenomeSizes/mm9.chrom.sizes"
+UCSC[11]="/t1-data/user/hugheslab/telenius/GENOMES/PARP/mm9PARP_sizes.txt"
 
 # The indices in the UCSC array refer to genome names in supportedGenomes array (top of page).
 
@@ -322,7 +264,7 @@ CaptureDigestPath="/home/molhaem2/telenius/CCseqBasic/digests"
 
 
 # By default these are located in the 'conf/blackListedRegions' folder (relative to location of CCseqBasic3.sh main script) .
-# All these are already there - they come with the CCseqBasic4 codes.
+# All these are already there - they come with the CCseqBasic3 codes.
 
 # Change the files / paths below, if you want to use your own versions of these files.
 
@@ -331,6 +273,7 @@ genomesWhichHaveBlacklist[1]="mm10"
 genomesWhichHaveBlacklist[2]="hg18"
 genomesWhichHaveBlacklist[3]="hg19"
 genomesWhichHaveBlacklist[4]="mm10balb"
+genomesWhichHaveBlacklist[5]="mm9PARP"
 # - i.e. : not all genomes have to have a blacklist.
 # If the genome is not listed here, blacklist filtering is NOT conducted within the pipeline (turned off automatically).
 
@@ -342,252 +285,9 @@ BLACKLIST[1]="${confFolder}/BLACKLIST/mm10.bed"
 BLACKLIST[2]="${confFolder}/BLACKLIST/hg18.bed"
 BLACKLIST[3]="${confFolder}/BLACKLIST/hg19.bed"
 BLACKLIST[4]="${confFolder}/BLACKLIST/mm10.bed"
+BLACKLIST[5]="${confFolder}/BLACKLIST/mm9.bed"
 
 # The indices in the BLACKLIST array refer to genome names in genomesWhichHaveBlacklist array.
 
-# ----------------------------------------------
-
-# PUBLIC DATA - FOR UCSC VISUALISATION
-
-# All visualisation data will be saved in a publicly available disk space
-# If PIPE_hubbing.txt is used - ALL FILES are saved directly in the publicly available disk space.
-# If PIPE_hubbingSymbolic.txt is used, symbolic links are generated for the bigwig files instead of storing the actual files.
-#     When using PIPE_hubbingSymbolic.txt , the folder given in column 3 in PIPE_hubbingSymbolic.txt (the folder from which
-#     the bigwigs are linked to the public data area),
-#     needs to be WORLD-READABLE (a=r)
-
-# The HTTP (or ftp) server address, and public data folder structure
-
-SERVERTYPE="http"
-SERVERADDRESS="userweb.molbiol.ox.ac.uk"
-
-# These together set the server address to be :
-# http://userweb.molbiol.ox.ac.uk
-
-# If you don't set the ones below, it assumes the public data area structure looks like this :
-
-# Disk area location :
-# /public/datafile.txt
-
-# Publicly available file in server :
-# http://userweb.molbiol.ox.ac.uk/public/datafile.txt
-
-# You can delete or add stuff from the path, to match your data area design, with these parameters :
-
-# /public/telenius/dnasepipetests/PORTtest291216b
-
-REMOVEfromPUBLICFILEPATH=""
-
-# For example, your disk area location is :
-# /upper/folder/public/datafile.txt
-
-# And your publicly available file in server :
-# http://userweb.molbiol.ox.ac.uk/public/datafile.txt
-
-# To reach that, you would need to set :
-# REMOVEfromPUBLICFILEPATH="/upper/folder"
-
-ADDtoPUBLICFILEPATH=""
-
-# For example, your disk area location is :
-# /public/datafile.txt
-
-# Publicly available file in server :
-# http://userweb.molbiol.ox.ac.uk/home/folder/public/datafile.txt
-
-# To reach that, you would need to set :
-# ADDtoPUBLICFILEPATH="/home/folder"
-
-tobeREPLACEDinPUBLICFILEPATH=""
-REPLACEwithThisInPUBLICFILEPATH="" # This can be empty : then the 'tobeREPLACEDinPUBLICFILEPATH' will be replaced with '' (just removed)
-
-# For example, your disk area location is :
-# /public/sub/folder/datafile.txt
-
-# And your publicly available file in server :
-# http://userweb.molbiol.ox.ac.uk/public/another/folder/structure/datafile.txt
-
-# To reach that, you would need to set :
-# tobeREPLACEDinPUBLICFILEPATH="/sub/folder"
-# REPLACEwithThisInPUBLICFILEPATH="/another/folder/structure"
-
-
-# THE ORDER THE ABOVE TAKE EFFECT :
-
-# 1) REMOVE from public path
-# 2) ADD to public path
-# 3) REPLACE in public path
-
-# Note !! - the (3) is vulnerable to repeating of the same subfolder structure.
-# It only will find and replace the LEFTmost of the occurrences of the file path it searches for.
-
-# You can finetune the subroutine parsePublicLocations() which does this parsing :
-# it is given in the end of this config.sh file !
-
-# -----------------------------------------------
-
 }
 
-setPathsForPipe(){
-
-# Setting the needed programs to path.
-
-# This can be done EITHER via module system, or via EXPORTING them to the path.
-# If exporting to the path - the script does not check already existing conflicting programs (which may contain executable with same names as these)
-
-# Change this to "0" if you want to use direct paths.
-useModuleSystem=1
-# useModuleSystem=1 : load via module system
-# useModuleSystem=0 : load via direct paths
-
-
-# PATHS_LOADED_VIA_MODULES
-
-if [ "${useModuleSystem}" -eq 1 ]; then
-
-module purge
-# Removing all already-loaded modules to start from clean table
-
-module load samtools/1.1
-# Supports all samtools versions in 1.* series. Does not support samtools/0.* .
-
-module load bowtie/1.1.2
-# Supports all bowtie1 versions 1.* and 0.*
-module load bowtie2/2.1.0
-# Supports all bowtie2 versions
-
-module load bedtools/2.17.0
-# Supports bedtools versions 2.1* . Does not support bedtools versions 2.2*
-
-module load ucsctools/1.0
-# Supports ucsctools versions 1.* . Not known if supports also ucsctools versions 2.* (most probably not)
-
-module load flash/1.2.8
-# Not known if would support other flash versions. Most probably will support.
-
-module load fastqc/0.10.1
-# Will not support fastqc versions 0.11.* or newer.
-# CCseqBasic3 includes a legacy version of fastqc ( fastqc_v0.10.1.zip ), which you can install if you don't have "old enough" fastqc.
-
-module load trim_galore/0.3.1
-# Not known if would support other trim_galore versions. Most probably will support.
-
-# module load cutadapt/1.2.1
-# If your trim_galore module does not automatically load the needed cutadapt,
-# uncomment this line
-
-# Not known if would support other cutadapt versions. Most probably will support.
-
-module load blat/35
-# Not known if would support other blat versions. Most probably will support.
-
-module load perl/5.18.1
-# Most probably will run with any perl
-
-module load python/2.7.5
-# Most probably will run with any Python
-
-module list
-
-
-# EXPORT_PATHS_WITHOUT_MODULE_SYSTEM
-
-else
-    
-# Note !!!!!
-# - the script does not check already existing conflicting programs within $PATH (which may contain executable with same names as these)
-
-export PATH=$PATH:/package/samtools/1.1/bin/samtools
-export PATH=$PATH:/package/bowtie/1.1.2/bin/bowtie
-
-export PATH=$PATH:/package/bedtools/2.17.0/bin/bedtools
-export PATH=$PATH:/package/ucsctools/1.0/bin
-export PATH=$PATH:/package/flash/1.2.8/bin/flash
-export PATH=$PATH:/package/fastqc/0.10.1/bin/fastqc
-export PATH=$PATH:/package/trim_galore/0.3.1/bin/trim_galore
-export PATH=$PATH:/package/cutadapt/1.2.1/bin/cutadapt
-export PATH=$PATH:/package/perl/5.18.1/bin/perl
-
-export PATH=$PATH:/package/blat/35/bin/blat
-export PATH=$PATH:/package/python/2.7.5/bin/python
-
-# See notes of SUPPORTED VERSIONS above !
-
-echo $PATH
-
-fi
-
-}
-
-
-# -------------------------------------------
-# The parser of server name and public file location.
-# The parser is given here - to facilitate the modifications to Your Public Environment
-parsePublicLocations(){
-
-# THE ORDER THE ABOVE TAKE EFFECT :
-
-# 1) REMOVE from public path
-# 2) ADD to public path
-# 3) REPLACE in public path
-
-echo "Parse server path from disk path .."
-echo "Parse server path from disk path .." >&2
-
-echo
-echo "diskFolder ${diskFolder}"
-# The diskFolder is the second column of PIPE_hubbing.sh or PIPE_hubbingSymbolic.txt
-
-serverFolderTEMP=${diskFolder}
-
-# 1) REMOVE from public path
-
-if [ "${REMOVEfromPUBLICFILEPATH}" != "" ];then
-    
-# Replace all / with \/  to be readable for SED parser
-removeParseForSed=$( echo ${REMOVEfromPUBLICFILEPATH} | sed 's/\//\\\//g' )
-# Remove from the beginning (^) of the disk path
-removed_from_path=$( echo ${serverFolderTEMP} | sed 's/^'${removeParseForSed}'//' )
-# Update the serverFolderTEMP
-serverFolderTEMP=${removed_from_path}
-
-fi
-
-# 2) ADD to public path
-
-if [ "${ADDtoPUBLICFILEPATH}" != "" ];then
-
-# Replace all / with \/  to be readable for SED parser
-addParseForSed=$( echo ${ADDtoPUBLICFILEPATH} | sed 's/\//\\\//g' )
-# Add to the beginning (^) of the disk path
-added_to_path=$( echo ${serverFolderTEMP} | sed 's/^/'${addParseForSed}'/' )
-# Update the serverFolderTEMP
-serverFolderTEMP=${added_to_path}
-
-fi
-
-# 3) REPLACE in public path
-
-if [ "${tobeREPLACEDinPUBLICFILEPATH}" != "" ];then
-    
-# Replace all / with \/  to be readable for SED parser
-toBeParseForSed=$( echo ${tobeREPLACEDinPUBLICFILEPATH} | sed 's/\//\\\//g' )
-withThisParseForSed=$( echo ${REPLACEwithThisInPUBLICFILEPATH} | sed 's/\//\\\//g' )
-# Replace within the disk path
-replaced_path=$( echo ${serverFolderTEMP} | sed 's/'${toBeParseForSed}'/'${withThisParseForSed}'/' )
-# Update the serverFolderTEMP
-serverFolderTEMP=${replaced_path}
-
-# Note !! - the (3) is vulnerable to repeating of the same subfolder structure.
-# It only will find and replace the LEFTmost of the occurrences of the file path it searches for.
-
-fi
-
-# This is the value which is returned to the script :
-
-serverFolder="${serverFolderTEMP}"
-
-echo
-echo "serverFolder ${serverFolder}"
-    
-}
