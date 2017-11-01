@@ -534,10 +534,10 @@ if [[ ${TRIM} -eq "1" ]]; then
 printThis="Running trim_galore for the reads.."
 printToLogFile
 
-printThis="${RunScriptsPath}/QC_and_Trimming.sh -q ${intQuals} --filter 3"
+printThis="${RunScriptsPath}/QC_and_Trimming.sh -q ${intQuals} --filter 3 --qmin ${QMIN}"
 printToLogFile
 
-${RunScriptsPath}/QC_and_Trimming.sh -q "${intQuals}" --filter 3
+${RunScriptsPath}/QC_and_Trimming.sh -q "${intQuals}" --filter 3 --qmin ${QMIN}
 
 ls -lht
 
@@ -623,8 +623,8 @@ echo "Beginning bowtie run (outputting run command after completion) .."
 setMparameter
 
 if [ "${BOWTIE}" -eq 2 ] ; then
-bowtie2 -p 1 ${otherBowtie2Parameters} ${bowtieQuals} --maxins ${MAXINS} -x ${bowtieGenomeBuild} Combined_reads_REdig.fastq > Combined_reads_REdig.sam
-echo "bowtie2 -p 1 ${otherBowtie2Parameters} ${bowtieQuals} --maxins ${MAXINS} -x ${bowtieGenomeBuild} FLASHED_REdig.fastq"
+bowtie2 -p 1 ${otherBowtie2Parameters} ${bowtieQuals} -x ${BowtieGenome} Combined_reads_REdig.fastq > Combined_reads_REdig.sam
+echo "bowtie2 -p 1 ${otherBowtie2Parameters} ${bowtieQuals} -x ${BowtieGenome} FLASHED_REdig.fastq"
 else
 bowtie -p 1 --chunkmb "${BOWTIEMEMORY}" ${otherBowtie1Parameters} ${bowtieQuals} ${mParameter} --best --strata --sam "${BowtieGenome}" Combined_reads_REdig.fastq > Combined_reads_REdig.sam
 fi
