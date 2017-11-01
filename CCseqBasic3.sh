@@ -501,7 +501,7 @@ printToLogFile
 
     # The location of "zero" for the filtering/trimming programs cutadapt, trim_galore, flash    
     intQuals=""
-    if [ "${bowtieQuals}" = "--phred33-quals" ] ; then
+    if [ "${bowtieQuals}" == "--phred33-quals" ] || [ "${bowtieQuals}" == "--phred33" ]; then
         intQuals="33"
     else
         # Both solexa and illumina phred64 have their "zero point" in 64
