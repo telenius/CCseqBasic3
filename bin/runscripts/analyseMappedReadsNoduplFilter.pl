@@ -95,7 +95,8 @@ use Pod::Usage;
  -limit		Limit the analysis to the first n reads of the file
  -genome	Specify the genome (mm9 / hg18)
  -globin	Combines the two captures from the gene duplicates (HbA1 and HbA2)
-
+ -ucscsizes     Genome sizes file 
+ -stringent 	enforces additional stringency - forces all reported subfragments to be unique
 
 =head1 AUTHOR
 
