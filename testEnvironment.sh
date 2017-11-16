@@ -278,8 +278,6 @@ ls ${mainScriptFolder}/intersectappend.pl
 scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
 ls ${mainScriptFolder}/fastq_scores_bowtie1.pl
 scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
-ls ${mainScriptFolder}/fastq_scores_bowtie2.pl
-scriptFilesMissing=$(( ${scriptFilesMissing} + $? ))
 
 echo
 sleep 3
@@ -332,7 +330,7 @@ echo ' |'
 echo ' `-- bin'
 echo '     |-- runscripts'
 echo '     |   |-- QC_and_Trimming.sh analyseMappedReads.pl '
-echo '     |   |-- fastq_scores_bowtie1.pl fastq_scores_bowtie2.pl intersectappend.pl'
+echo '     |   |-- fastq_scores_bowtie1.pl intersectappend.pl'
 echo '     |   |-- dpnIIcutGenome3.pl dpnIIcutReads3.pl nlaIIIcutGenome3.pl nlaIIIcutReads3.pl'
 # echo '     |   |   hindIIIcutGenome3.pl hindIIIcutReads3.pl'
 echo '     |   |-- filterArtifactMappers'
@@ -344,7 +342,7 @@ echo '     |   |-- testers_and_loggers.sh parameterSetters.sh usageAndVersion.sh
 echo '     |   `-- validateSetup'
 echo '     |       `-- g.txt l.txt s.txt'
 echo '     `-- perlHelpers'
-echo '         |-- data2gff.pl fastq_scores_bowtie1/2.pl reverse_seq.pl '
+echo '         |-- data2gff.pl fastq_scores_bowtie1.pl reverse_seq.pl '
 echo '         `-- sam2fastq.pl trim1base3prime.pl windowingScript.pl'
 echo ''
 echo '`-- conf'
@@ -409,7 +407,7 @@ echo "          Add your toolkit paths to this file : "
 echo "          ${confFolder}/loadNeededTools.sh "
 echo
 echo "NOTE !!   You need to edit this file ALSO if you want to disable loading the toolkits via the above script."
-echo "          To disable the loading of the tools, set : setToolLocations=0 "
+echo "          To disable the loading of the tools, set :  useModuleSystem=1   and  setPathsHere=0"
 echo
 sleep 8
 fi
@@ -511,29 +509,6 @@ sleep 2
 
 ##########################################################################
 echo
-echo "Bowtie 2 indices : "
-echo
-echo -e "GENOME\tBOWTIE 2 index"
-for g in $( seq 0 $((${#supportedGenomes[@]}-1)) ); do    
-
- echo -en "${supportedGenomes[$g]}\t${BOWTIE2[$g]}"
-
-TEMPcount=$(($( ls -1 ${BOWTIE2[$g]}* | grep -c "" )))
-
-if [ "${TEMPcount}" -eq 0 ]; then
-    echo -e "\tINDICES DO NOT EXIST in the given location !!"
-    exitCode=$(( ${exitCode} +1 ))
- else
-    echo ""
- fi
- 
-done
-
-echo
-sleep 2
-
-##########################################################################
-echo
 echo "UCSC genome size files : "
 echo
 for g in $( seq 0 $((${#supportedGenomes[@]}-1)) ); do
@@ -614,15 +589,6 @@ echo "Bowtie 1 .."
 echo
 bowtie --version | head -n 5
 bowtie --version >> /dev/null
-exitCode=$(( ${exitCode} + $? ))
-echo
-
-sleep 2
-
-echo "Bowtie 2 .."
-echo
-bowtie2 --version | head -n 5
-bowtie2 --version >> /dev/null
 exitCode=$(( ${exitCode} + $? ))
 echo
 

@@ -49,13 +49,10 @@ setPathsHere=0
 
 # #############################################################################
 
+
 # PATHS_LOADED_VIA_MODULES
 
 if [ "${useModuleSystem}" -eq 1 ]; then
-
-echo
-echo "Loading tools via module system .."
-echo
 
 module purge
 # Removing all already-loaded modules to start from clean table
@@ -65,8 +62,6 @@ module load samtools/1.1
 
 module load bowtie/1.1.2
 # Supports all bowtie1 versions 1.* and 0.*
-module load bowtie2/2.1.0
-# Supports all bowtie2 versions
 
 module load bedtools/2.17.0
 # Supports bedtools versions 2.1* . Does not support bedtools versions 2.2*
@@ -107,7 +102,7 @@ elif [ "${setPathsHere}" -eq 1 ]; then
 echo
 echo "Adding tools to PATH .."
 echo
-
+    
 # Note !!!!!
 # - the script does not check already existing conflicting programs within $PATH (which may contain executable with same names as these)
 
@@ -136,7 +131,7 @@ else
     
 echo
 echo "Tools should already be available in PATH - not loading anything .."
-echo    
+echo
 
 fi
 

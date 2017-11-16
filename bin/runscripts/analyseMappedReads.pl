@@ -512,13 +512,12 @@ while (my $line = <INFH>)  #loops through all the lines of the sam file
       if ($use_dump eq 1){print DUMPOUTPUT $line."\n"} #"$name\n$sequence\n+\n$qscore\n"};
     }
     
-    # Now as bowtie2 is supported, this can be commented out ..
-    # elsif ( $cigar =~/\d++\w++\d++/ )
-    # {
-    #   $counters{"06e Fragments with CIGAR strings failing to parse (containing introns or indels) :"}++;
-    #   #push @{$data{$readname}{"coord array"}}, "cigarfail";
-    #   if ($use_dump eq 1){print DUMPOUTPUT $line."\n"} #"$name\n$sequence\n+\n$qscore\n"};     
-    # }
+    elsif ( $cigar =~/\d++\w++\d++/ )
+    {
+      $counters{"06e Fragments with CIGAR strings failing to parse (containing introns or indels) :"}++;
+      #push @{$data{$readname}{"coord array"}}, "cigarfail";
+      if ($use_dump eq 1){print DUMPOUTPUT $line."\n"} #"$name\n$sequence\n+\n$qscore\n"};     
+    }
     
     #-----------------------------------------------------------------------------------------
     
@@ -556,138 +555,13 @@ while (my $line = <INFH>)  #loops through all the lines of the sam file
 	    if ($bitwise & 0x0010) { $data{$readname}{$pe}{$readno}{"strand"} = "minus";}
 	    else { $data{$readname}{$pe}{$readno}{"strand"} = "plus";}
 	    
-	    # Here setting the sequence, and the start and end of the coordinates (for duplicate filtering)
+	    #This adds the start of the sequence and the end of the read to the hash
+            $cigar =~/(\d++)(.*)/;
 	    
             $data{$readname}{$pe}{$readno}{"seqlength"} = $1;
-	    # This is not used for anything.
             $data{$readname}{$pe}{$readno}{"readstart"} = $readstart;
-	    
-	    # Setting the read end - old way (without bowtie2 support)
-            # $data{$readname}{$pe}{$readno}{"readend"} = $readstart+length($sequence)-1; #minus1 due to 1 based sam file input.
-	    
-	    # Setting the read end - with bowtie2 support (full cigar parsing)
-	    
-	    # Here adding bowtie2 support :
-	    # https://samtools.github.io/hts-specs/SAMv1.pdf
-	    # Op 	BAM Description 			ConsumesQuery ConsumesReference
-	    # 
-	    # M 0 	alignment match (or mismatch) 		yes 		yes
-	    # I 1 	insertion to the reference 		yes 		no
-	    # D 2 	deletion from the reference 		no 		yes
-	    # N 3 	skipped region from the reference 	no 		yes
-	    # S 4 	soft clipping (present in SEQ) 		yes 		no
-	    # H 5 	hard clipping (NOT present in SEQ) 	no 		no
-	    # P 6 	padding (silent deletion) 		no 		no
-	    # = 7 	sequence match 				yes 		yes
-	    # X 8 	sequence mismatch 			yes 		yes
-	    # 
-	    # all possible : [MIDNSHP=X]
-	    # 
-	    # Op 	BAM Description 			ConsumesQuery ConsumesReference
-	    # 
-	    # M 0 	alignment match (or mismatch) 		yes 		yes
-	    # D 2 	deletion from the reference 		no 		yes
-	    # N 3 	skipped region from the reference 	no 		yes
-	    # = 7 	sequence match 				yes 		yes
-	    # X 8 	sequence mismatch 			yes 		yes
-	    # 
-	    # counting towards reference end point : [MDN=X]
-	    
-	    # This adds the start of the sequence and the end of the read to the hash
-	    
-	    # Setting to zero before the cigar parse.
-	    $data{$readname}{$pe}{$readno}{"readend"}=$data{$readname}{$pe}{$readno}{"readstart"}-1; #minus1 due to 1 based sam file input.
-	    # Empty block for temp cigar
-	    {
-	    my $TEMPcigar=$cigar;
-	    while ($TEMPcigar =~ /(\d++)([MIDNSHP=X])(.*)/) 
-	    {
-	      my $number=$1;
-	      my $ident=$2;
-	      
-	      $TEMPcigar=$3;
-	      
-	      if ($ident =~ /^([MDN=X])$/)
-		{
-		  $data{$readname}{$pe}{$readno}{"readend"}+=$number;
-		}
-	    }
-	    }
-	    
-	    
-	    # Setting the sequence : this is only used in the snpcaller subroutine (so "ordinary runs" do not use this)
-	    
-	    # Old way of doing this (before bowtie2 support)
-	    # $data{$readname}{$pe}{$readno}{"sequence"} = $sequence;
-	    
-	    # Here adding bowtie2 support (full cigar parsing)
-	    # Op 	BAM Description 			ConsumesQuery ConsumesReference
-	    # 
-	    # These count normally
-	    # M 0 	alignment match (or mismatch) 		yes 		yes
-	    # = 7 	sequence match 				yes 		yes
-	    # X 8 	sequence mismatch 			yes 		yes
-	    # 
-	    # These are "skipped" - moving in seq coordinates, not printing anything 
-	    # I 1 	insertion to the reference 		yes 		no
-	    # S 4 	soft clipping (present in SEQ) 		yes 		no
-	    # 
-	    # These are "added" - not moving in seq coordinates, printing x-characters
-	    # D 2 	deletion from the reference 		no 		yes
-	    # N 3 	skipped region from the reference 	no 		yes
-	    # 
-	    # Ignoring these
-	    # H 5 	hard clipping (NOT present in SEQ) 	no 		no
-	    # P 6 	padding (silent deletion) 		no 		no
-	    
-	    # Initialising the sequence as empty string ..
-	    $data{$readname}{$pe}{$readno}{"sequence"}="";
-	    # Empty block for temp cigar and temp sequence
-	   {
-	   my $TEMPsequence=$sequence;
-	   my $TEMPcigar=$cigar;
-	   
-	   while ($TEMPcigar =~ /(\d++)([MIDNSHP=X])(.*)/)
-	   {
-	       my $addThis="";
-	       
-	       my $number=$1;
-	       my $ident=$2;
-	       $TEMPcigar=$3;
-		
-	       # These count normally
-	       if ($ident =~ /^([M=X])$/)
-	       {
-	         $addThis=substr($TEMPsequence,0,$number);
-	         $TEMPsequence=substr($TEMPsequence,$number);
-	       }
-		
-	       # These are "skipped" - moving in seq coordinates, not printing anything 
-	       if ($ident =~ /^([IS])$/)
-	       {
-	         $addThis="";
-	         $TEMPsequence=substr($TEMPsequence,$number);
-	       }
-		
-	       # These are "added" - not moving in seq coordinates, printing x-characters
-	       if ($ident =~ /^([DN])$/)
-	       {
-	         $addThis="";
-	         for (my$i=0; $i< $number; $i++)
-	         {
-		   $addThis=$addThis."x";
-		 }
-		
-	       }
-		
-	       # Ignoring these (silent in both reference and sequence)
-	       # [HP]
-		
-	       # In the end actually adding ..
-	       $data{$readname}{$pe}{$readno}{"sequence"}=$data{$readname}{$pe}{$readno}{"sequence"}.$addThis;
-		
-	   }
-	   }
+            $data{$readname}{$pe}{$readno}{"readend"} = $readstart+length($sequence)-1; #minus1 due to 1 based sam file input.
+	    $data{$readname}{$pe}{$readno}{"sequence"} = $sequence;
 	    
 	    #Generates a string of the coordinates of all the split paired end reads to allow duplicates to be excluded
 	    $data{$readname}{"number of reads"}++;
