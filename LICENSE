@@ -1,4 +1,16 @@
-                    GNU GENERAL PUBLIC LICENSE
+Distributed under GPL3 -
+
+EXCEPT THE conf/ucsctools FOLDER,
+THESE SCRIPTS NEED A SPECIAL LICENSE IF USED IN NON-ACADEMIC RESEARCH.
+More details here : https://genome.ucsc.edu/license/
+and
+https://github.com/ENCODE-DCC/kentUtils/tree/master/src/utils.
+
+-----------------------------------------------------------------------
+
+
+
+                   GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
