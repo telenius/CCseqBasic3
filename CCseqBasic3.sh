@@ -540,10 +540,17 @@ printToLogFile
 ${RunScriptsPath}/QC_and_Trimming.sh --fastqc
 
     # Changing names of fastqc folders to be "ORIGINAL"
-    mv -f READ1_fastqc READ1_fastqc_ORIGINAL
-    mv -f READ2_fastqc READ2_fastqc_ORIGINAL
-    mv -f READ1_fastqc.zip READ1_fastqc_ORIGINAL.zip
-    mv -f READ2_fastqc.zip READ1_fastqc_ORIGINAL.zip
+    
+    rm -rf READ1_fastqc_ORIGINAL
+    rm -rf READ2_fastqc_ORIGINAL
+    
+    mkdir READ1_fastqc_ORIGINAL
+    mkdir READ2_fastqc_ORIGINAL
+    
+    mv -f READ1_fastqc.html READ1_fastqc_ORIGINAL/fastqc_report.html
+    mv -f READ2_fastqc.html READ2_fastqc_ORIGINAL/fastqc_report.html 
+    mv -f READ1_fastqc.zip  READ1_fastqc_ORIGINAL.zip
+    mv -f READ2_fastqc.zip  READ2_fastqc_ORIGINAL.zip
    
     ls -lht
 
@@ -578,8 +585,16 @@ printToLogFile
 ${RunScriptsPath}/QC_and_Trimming.sh --fastqc
 
     # Changing names of fastqc folders to be "TRIMMED"
-    mv -f READ1_fastqc READ1_fastqc_TRIMMED
-    mv -f READ2_fastqc READ2_fastqc_TRIMMED
+    
+    rm -rf READ1_fastqc_TRIMMED
+    rm -rf READ2_fastqc_TRIMMED
+    
+    mkdir READ1_fastqc_TRIMMED
+    mkdir READ2_fastqc_TRIMMED
+    
+    mv -f READ1_fastqc.html READ1_fastqc_TRIMMED/fastqc_report.html
+    mv -f READ2_fastqc.html READ2_fastqc_TRIMMED/fastqc_report.html 
+    
     mv -f READ1_fastqc.zip READ1_fastqc_TRIMMED.zip
     mv -f READ2_fastqc.zip READ2_fastqc_TRIMMED.zip
     
@@ -618,6 +633,11 @@ printThis="fastqc --quiet -f fastq Combined_reads.fastq"
 printToLogFile
 
 fastqc --quiet -f fastq Combined_reads.fastq
+
+    rm -rf Combined_reads_fastqc   
+    mkdir Combined_reads_fastqc
+    
+    mv -f Combined_reads_fastqc.html Combined_reads_fastqc/fastqc_report.html
 
 
 ################################################################

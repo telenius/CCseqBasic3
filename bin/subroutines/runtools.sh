@@ -160,11 +160,6 @@ do
     rm -f $file
     ls -lht ${bamname}
 done
-dumpfile=$( ls *_dump.fastq)
-if [ "${dumpfile}" != "" ] && [ ! -s ${dumpfile} ]
-then
-    rm -f ${dumpfile}
-fi       
 }
 
 cleanUpRunFolder(){
