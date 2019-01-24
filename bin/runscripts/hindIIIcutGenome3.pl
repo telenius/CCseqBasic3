@@ -1,20 +1,20 @@
 ##########################################################################
 # Copyright 2017, Jelena Telenius (jelena.telenius@imm.ox.ac.uk)         #
 #                                                                        #
-# This file is part of CCseqBasic3 .                                     #
+# This file is part of CCseqBasic4 .                                     #
 #                                                                        #
-# CCseqBasic3 is free software: you can redistribute it and/or modify    #
+# CCseqBasic4 is free software: you can redistribute it and/or modify    #
 # it under the terms of the MIT license.
 #
 #
 #                                                                        #
-# CCseqBasic3 is distributed in the hope that it will be useful,         #
+# CCseqBasic4 is distributed in the hope that it will be useful,         #
 # but WITHOUT ANY WARRANTY; without even the implied warranty of         #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
 # MIT license for more details.
 #                                                                        #
 # You should have received a copy of the MIT license
-# along with CCseqBasic3.  
+# along with CCseqBasic4.  
 ##########################################################################
 
 use strict;
@@ -30,7 +30,7 @@ my $file_name=$1;
 my $file_path="";
 if ($file_name =~ /(.*\/)(\V++)/) {$file_path = $1; $file_name = $2};
 
-my $output_filename = "genome_dpnII_coordinates.txt"; 
+my $output_filename = $file_name."_hindIII_coordinates.txt"; 
 
 unless (open(OUTPUT, ">$output_filename")) {print "Cannot open file $output_filename\n"; exit;}
 
@@ -67,7 +67,7 @@ my @chrs = sort keys %genomehash;
 foreach $chr(@chrs)
 {
    
-my @frags = split (/GATC/i,$genomehash{$chr});
+my @frags = split (/AAGCTT/i,$genomehash{$chr});
 
 # Deals with the first fragment
     my $start=1; my $end= $start + (length$frags[0])+1; 
@@ -76,7 +76,7 @@ my @frags = split (/GATC/i,$genomehash{$chr});
 # Deals with all the middle fragments
     for (my $i=1; $i<$#frags; $i++)
     {   
-    $start = $end+1; $end = $start + (length $frags[$i]) +3;
+    $start = $end+1; $end = $start + (length $frags[$i]) +5;
     print OUTPUT "$chr:$start-$end\n";
     }
 

@@ -6,17 +6,17 @@
 # This file is part of CCseqBasic5 .                                     #
 #                                                                        #
 # CCseqBasic5 is free software: you can redistribute it and/or modify    #
-# it under the terms of the GNU General Public License as published by   #
-# the Free Software Foundation, either version 3 of the License, or      #
-# (at your option) any later version.                                    #
+# it under the terms of the MIT license.
+#
+#
 #                                                                        #
 # CCseqBasic5 is distributed in the hope that it will be useful,         #
 # but WITHOUT ANY WARRANTY; without even the implied warranty of         #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
-# GNU General Public License for more details.                           #
+# MIT license for more details.
 #                                                                        #
-# You should have received a copy of the GNU General Public License      #
-# along with CCseqBasic5.  If not, see <http://www.gnu.org/licenses/>.   #
+# You should have received a copy of the MIT license
+# along with CCseqBasic5.  
 ##########################################################################
 
 #------------------------------------------
@@ -325,12 +325,16 @@ trimmingOK=1
 if [ "${singleEnd}" -eq 0 ] ; then
     printThis="trim_galore --trim1 --phred${QUAL} --paired -q ${qualFilter} -a ${A1} -a2 ${A2} --length ${L} --stringency ${S} ${READ1}.fastq ${READ2}.fastq"
     printToTrimmingLogFile
+    setStringentFailForTheFollowing
     trim_galore --trim1 "--phred${QUAL}" --paired -q "${qualFilter}" -a "${A1}" -a2 "${A2}" --length "${L}" --stringency "${S}" "${READ1}.fastq" "${READ2}.fastq" >> "read_trimming.log"
+    stopStringentFailAfterTheAbove
     if [ $? -ne 0 ]; then trimmingOK=0;fi
 else
     printThis="trim_galore --phred${QUAL} -q ${qualFilter} -a ${A1} --length ${L} --stringency ${S} ${READ1}.fastq"
     printToTrimmingLogFile
+    setStringentFailForTheFollowing
     trim_galore "--phred${QUAL}" -q "${qualFilter}" -a "${A1}" --length "${L}" --stringency "${S}" "${READ1}.fastq" >> "read_trimming.log"    
+    stopStringentFailAfterTheAbove
     if [ $? -ne 0 ]; then trimmingOK=0;fi
 fi
 
@@ -429,20 +433,26 @@ elif [ "${runMode}" -eq 5 ] ; then
     
     printThis="READ 1"
     printToTrimmingLogFile
+    setStringentFailForTheFollowing
     cutadapt -O "${S}" "--quality-base=${QUAL}" -q "${qualFilter}" -m 0 -g "${A1}" "${READ1}.fastq" -o TEMP_R1_trimmed.fastq >> "read_trimming.log"
+    stopStringentFailAfterTheAbove
     if [ $? -ne 0 ]; then trimmingOK=0;fi
 
 if [ "${singleEnd}" -eq 0 ] ; then
     printThis="READ 2"
     printToTrimmingLogFile
+    setStringentFailForTheFollowing
     cutadapt -O "${S}" "--quality-base=${QUAL}" -q "${qualFilter}" -m 0 -g "${A1}" "${READ2}.fastq" -o TEMP_R2_trimmed.fastq >> "read_trimming.log"
+    stopStringentFailAfterTheAbove  
     printThis="Running trim_galore in 'non-trimming mode' to eliminate too short read pairs, excludes both reads in pair if EITHER of them end up shorter than ${L}bp"
     printToTrimmingLogFile   
  
     printThis="trim_galore --trim1 --phred${QUAL} --paired -q ${qualFilter} -a ${A1} --length ${L} --stringency 1000 TEMP_R1_trimmed.fastq TEMP_R2_trimmed.fastq"
     printToTrimmingLogFile
     
+    setStringentFailForTheFollowing
     trim_galore "--phred${QUAL}" --trim1 --paired -q "${qualFilter}" -a "${A1}" --length "${L}" --stringency 1000 TEMP_R1_trimmed.fastq TEMP_R2_trimmed.fastq >> "read_trimming.log"
+    stopStringentFailAfterTheAbove
     if [ $? -ne 0 ]; then trimmingOK=0;fi
     rm -f TEMP_R1_trimmed.fastq TEMP_R2_trimmed.fastq
 
